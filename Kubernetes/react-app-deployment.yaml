@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: react-app
-        image: narasimhaswamy76/sample-react:v1
+        image: narasimhaswamy76/sample-react:9
         ports:
         - containerPort: 3000
