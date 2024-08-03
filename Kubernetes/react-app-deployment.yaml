@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: react-app
-        image: your-dockerhub-username/react-app:latest
+        image: narasimhaswamy76/sample-react:v1
         ports:
-        - containerPort: 80
+        - containerPort: 3000
