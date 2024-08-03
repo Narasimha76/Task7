@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+    
+    environment {
+        IMAGE_NAME = 'sample-react'
+        TAG = "${env.BUILD_NUMBER}"
+        USER = 'narasimhaswamy76'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git url: 'https://github.com/Narasimha76/Task7.git', branch: 'main'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Verify the Dockerfile exists
+                    sh 'ls -l'
+                    // Build the Docker image
+                    sh 'docker build -t my-react-app .'
+                }
+            }
+        }
+        stage('Debug') {
+            steps {
+                script {
+                    // Debug Docker configuration
+                    sh 'docker info'
+                    sh 'docker --version'
+                    sh 'curl -I https://index.docker.io'
+                }
+            }
+        }
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                      echo "========executing Build react Images========"
+                            withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                            sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+                            sh "docker build -t ${IMAGE_NAME}:${TAG} ."
+                            sh "docker tag ${IMAGE_NAME}:${TAG} $dockerHubUser/${IMAGE_NAME}:${TAG}"
+                            sh "docker push $dockerHubUser/${IMAGE_NAME}:${TAG}"
+                            }
+                    
+
+
+                }
+            }
+        }
+        
+        stage('update-kubectl-image') {
+            steps {
+                script {
+                       echo "=======update EKS Image========"
+                            
+                       sh "kubectl"
+                       sh "cd Kubernetes"
+                       sh "ls"
+                       sh """
+                            sed -i 's|$USER/${IMAGE_NAME}:.*|$USER/${IMAGE_NAME}:${TAG}|' Kubernetes/react-app-deployment.yaml
+                            kubectl apply -f Kubernetes/react-app-deployment.yaml
+                            kubectl apply -f Kubernetes/service.yaml
+                        """
+
+
+                }
+            }
+        }
+    }
+}
