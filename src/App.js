@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Kubernetes
+          Hello Namaste 
         </p>
         <a
           className="App-link"
@@ -21,5 +21,4 @@ function App() {
     </div>
   );
 }
-
 export default App;
